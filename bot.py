@@ -60,3 +60,4 @@ async def on_message(message):
 
 # Token automático conectado a Render
 bot.run(os.getenv("DISCORD_TOKEN"))
+    
