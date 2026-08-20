@@ -203,3 +203,6 @@ try:
 
 await member.ban(delete_message_days=7, reason=motivo)
 await ctx.send("🔨 **Operación finalizada.** El registro del usuario ha sido eliminado por completo.")
+
+# ACTIVACIÓN DEL SUPERBOT
+bot.run(os.getenv("DISCORD_TOKEN"))
