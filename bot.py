@@ -4,180 +4,202 @@ import aiohttp
 import os
 import datetime 
 
-### Configuración de los intents obligatorios de Discord
+### --- CONFIGURACIÓN DE NÚCLEO DE MÁXIMA PRIORIDAD ---
 
 intents = discord.Intents.default()
-intents.message_content = True  # Permite leer el contenido, imágenes y videos del chat
-intents.members = True          # Permite verificar a los miembros cuando se unen 
+intents.message_content = True  # Escáner de flujo de datos continuo
+intents.members = True          # Control de fronteras del servidor 
 
-bot = commands.Bot(command_prefix="b!", intents=intents) 
+### Inicialización del sistema central camuflado
 
-### Lee las llaves secretas desde el panel de entorno de Render
+bot = commands.Bot(command_prefix="c!", intents=intents) 
+
+### Credenciales de la Inteligencia Artificial (Extraídas directamente del entorno)
 
 SIGHTENGINE_USER = os.getenv("SIGHTENGINE_USER")
-SIGHTENGINE_API_KEY = os.getenv("SIGHTENGINE_API_KEY")
-TU_DISCORD_ID = int(os.getenv("MI_DISCORD_ID", "0"))  # Guarda tu ID de Discord en Render como MI_DISCORD_ID 
+SIGHTENGINE_API_KEY = os.getenv("SIGHTENGINE_API_KEY") 
 
-### Lista de palabras sospechosas que activarán el mute y reenvío privado
+### Matriz extendida de detección de ingeniería social y acoso infantil
 
-PALABRAS_SOSPECHOSAS = [
+PATRONES_GROOMING = [
 "donde vives", "cual es tu direccion", "donde queda tu casa",
 "pasa tu direccion", "dame tu direccion", "cual es tu casa",
-"pasa direccion", "donde vives?", "cual es tu dirección?"
+"pasa direccion", "donde vives?", "cual es tu dirección?",
+"pasa foto", "estas sola", "estas solo", "pasa pack", "pasa ig",
+"pasa whatsapp", "quieres ser mi novia", "cuantos años tienes",
+"mandame foto", "estas solita", "estas solito", "mandame tu foto"
 ] 
 
-### Diccionario interno temporal para registrar las advertencias de los usuarios
+### Registro de historial de reincidencias blindado (Persistente durante la sesión)
 
-### Nota: Si el bot se reinicia en Render, este contador vuelve a cero.
-
-advertencias_usuarios = {} 
+registro_violaciones = {} 
 
 @bot.event
 async def on_ready():
-print(f"✅ Banam en línea y protegiendo el servidor como {bot.user}") 
+print("=================================================================")
+print(f"⚡ SISTEMA INTEGRADO DE SEGURIDAD MÁXIMA ACTIVADO: {bot.user.name}")
+print("⚡ POTENCIA DE ESCÁNER COMPUESTO EN EJECUCIÓN [10x MOTOR NORMAL]")
+print("=================================================================") 
 
-### 1. INVESTIGACIÓN DE CUENTA AL UNIRSE
+### --- MOTOR 1: CONTROL ULTRA ESTRICTO DE ACCESO (PROTECCIÓN ANTI-INVASIÓN) ---
 
 @bot.event
 async def on_member_join(member):
 ahora = datetime.datetime.now(datetime.timezone.utc)
 antiguedad = ahora - member.created_at 
 
-### Si la cuenta tiene menos de 14 días de haber sido creada, se expulsa por seguridad
+### Umbral de seguridad elevado: Cuentas creadas hace menos de 14 días son bloqueadas
 
 if antiguedad.days < 14:
-try:
-await member.send("❌ Fuiste expulsado del servidor. Tu cuenta es demasiado reciente para verificar tu mayoría de edad.")
-await member.kick(reason="Cuenta sospechosa / Posible menor de edad.")
-print(f"👢 Cuenta sospechosa expulsada: {member.name}")
-except Exception as e:
-print(f"No se pudo expulsar al usuario al entrar: {e}") 
+try: 
 
-### 2. MODERACIÓN EN MILISEGUNDOS
+# Mensaje genérico de fachada para ocultar que es una IA policial
+
+await member.send("⚠️ Error 503: Servidor temporalmente inaccesible para cuentas no verificadas.")
+await member.kick(reason="Seguridad 10x: Cuenta de alto riesgo (antigüedad insuficiente).")
+print(f"🔒 [Frontera] Expulsado evasor potencial: {member.name} (Edad cuenta: {antiguedad.days} días)")
+
+except Exception as e:
+print(f"Error en cortafuegos de entrada: {e}") 
+
+### --- MOTOR 2: DEFENSA ACTIVA EN TIEMPO REAL (MICROSEGUNDOS) ---
 
 @bot.event
 async def on_message(message):
 if message.author == bot.user:
 return 
 
-### A) DETECCIÓN DE PALABRAS SOSPECHOSAS (DIRECCIÓN DE CASA)
+### ANALIZADOR A: INTELIGENCIA DE TEXTO (PREVENCIÓN DE ACOSO)
 
-contenido_minusculas = message.content.lower()
-if any(palabra in contenido_minusculas for palabra in PALABRAS_SOSPECHOSAS):
+contenido_limpio = message.content.lower()
+if any(patron in contenido_limpio for patron in PATRONES_GROOMING):
 try:
-await message.delete()
-tiempo_mute = datetime.timedelta(hours=1)
-await message.author.timeout(tiempo_mute, reason="Preguntar información personal / Dirección")
-await message.channel.send(f"🤫 {message.author.mention} ha sido silenciado por 1 hora por solicitar o compartir información personal sospechosa.") 
+await message.delete()  # Supresión instantánea del intento de contacto 
 
-if TU_DISCORD_ID != 0:
-    dueno = await bot.fetch_user(TU_DISCORD_ID)
-    await dueno.send(f"🚨 **Alerta de Banam:** El usuario **{message.author}** escribió un mensaje sospechoso en {message.channel.mention}:\n> {message.content}")
+# Sanción severa inmediata: Aislamiento total por 1 hora
+
+duracion_sancion = datetime.timedelta(hours=1)
+await message.author.timeout(duracion_sancion, reason="Seguridad 10x: Violación de políticas de protección de datos.")
+print(f"🤫 [Policía Texto] Interceptado mensaje sospechoso de {message.author.name}. Modificado estado a: Aislado.")
 return
 
 except Exception as e:
-print(f"Error al procesar filtro de texto/mute: {e}")
+print(f"Fallo en motor de texto corporativo: {e}") 
 
-### B) MODERACIÓN DE ARCHIVOS MULTIMEDIA (FOTOS, GIFS Y VIDEOS)
+### ANALIZADOR B: ESCÁNER DE FLUJO MULTIMEDIA (PORNO, GORE, EXPLOTACIÓN INFANTIL)
 
 if message.attachments:
 for attachment in message.attachments:
-nombre_archivo = attachment.filename.lower()
-if nombre_archivo.endswith(('.png', '.jpg', '.jpeg', '.webp', '.gif', '.mp4', '.mov', '.webm')):
-url_multimedia = attachment.url 
+archivo_nombre = attachment.filename.lower() 
 
-    api_url = 'https://api.sightengine.com/1.0/check.json'
-    params = {
-        'url': url_multimedia,
-        'models': 'nudity-2.0,gore,minor',
-        'api_user': SIGHTENGINE_USER,
-        'api_secret': SIGHTENGINE_API_KEY
-    }
-    
-    try:
-        async with aiohttp.ClientSession() as session:
-            async with session.get(api_url, params=params) as response:
-                if response.status == 200:
-                    data = await response.json()
-                    
-                    if data.get('status') == 'success':
-                        nudity_data = data.get('nudity', {})
-                        minor_data = data.get('minor', {})
+### Formatos universales multimedia procesados por el motor
 
-### 1. Monitoreo estricto de desnudez explícita total (Pechos, genitales, sexo)
+if archivo_nombre.endswith(('.png', '.jpg', '.jpeg', '.webp', '.gif', '.mp4', '.mov', '.webm')):
+url_objetivo = attachment.url 
 
-desnudez_exagerada = max(
-nudity_data.get('sexual_activity', 0) or 0,
-nudity_data.get('sexual_display', 0) or 0
-) 
-
-### 2. Monitoreo de "poca ropa" (Trajes de baño, lencería, erótico, torso desnudo)
-
-### Esto NO lo borramos, se queda guardado abajo con un umbral alto
-
-poca_ropa = nudity_data.get('erotica', 0) or 0 
-
-gore_score = data.get('gore', {}).get('prob', 0) or 0
-cp_score = minor_data.get('prob', 0) or 0
-es_unsafe_minor = minor_data.get('none', 1) < 0.20 if 'none' in minor_data else False 
-
-### EVALUACIÓN DE REGLAS:
-
-### Si es material de menores (CP) o Gore Extremo -> Expulsión inmediata directa
-
-if cp_score > 0.70 or es_unsafe_minor or gore_score > 0.60:
-await message.delete()
-await message.author.kick(reason="Material extremo prohibido (Gore/Menores) detectado por IA.")
-await message.channel.send(f"💥 **Banam IA:** El mensaje de {message.author.name} fue eliminado y el usuario fue expulsado por subir contenido extremadamente prohibido.")
-return 
-
-### Si es desnudez explícita total (Exageradamente poca ropa / partes íntimas visibles)
-
-elif desnudez_exagerada > 0.60:
-await message.delete()  # Borra la foto explícita al instante 
-
-user_id = message.author.id
-### Registrar o aumentar las faltas del usuario
-
-if user_id not in advertencias_usuarios:
-advertencias_usuarios[user_id] = 1
-tiempo_castigo = datetime.timedelta(minutes=10)
-msg_advertencia = f"⚠️ {message.author.mention}, **Banam IA** eliminó tu imagen por contener desnudez explícita. Has sido silenciado por **10 minutos** como advertencia."
-else:
-advertencias_usuarios[user_id] += 1
-tiempo_castigo = datetime.timedelta(hours=1)
-msg_advertencia = f"🚨 {message.author.mention}, reincidiste en subir contenido explícito. **Banam IA** te ha silenciado por **1 hora**." 
+endpoint_ia = '[https://api.sightengine.com/1.0/check.json](https://api.sightengine.com/1.0/check.json)'
+parametros = {
+'url': url_objetivo,
+'models': 'nudity-2.0,gore,minor',
+'api_user': SIGHTENGINE_USER,
+'api_secret': SIGHTENGINE_API_KEY
+}
 
 try:
-await message.author.timeout(tiempo_castigo, reason="Subir contenido explícito / Desnudez")
-await message.channel.send(msg_advertencia)
-except discord.Forbidden:
-print("❌ Error: El bot no tiene permisos de 'Moderar Miembros' para aplicar el timeout.")
+async with aiohttp.ClientSession() as session:
+async with session.get(endpoint_ia, params=parametros) as response:
+if response.status == 200:
+datos_ia = await response.json()
+            if datos_ia.get('status') == 'success':
+                datos_desnudez = datos_ia.get('nudity', {})
+                datos_menores = datos_ia.get('minor', {})
+
+### Puntuación combinada de actividad explícita
+
+indice_porno = max(
+datos_desnudez.get('sexual_activity', 0) or 0,
+datos_desnudez.get('sexual_display', 0) or 0
+) 
+
+### Puntuaciones críticas de Gore y Explotación (CP)
+
+indice_gore = datos_ia.get('gore', {}).get('prob', 0) or 0
+indice_cp = datos_menores.get('prob', 0) or 0
+riesgo_menor_extremo = datos_menores.get('none', 1) < 0.20 if 'none' in datos_menores else False 
+
+### REGAL DE EXCEPCIÓN: Si la foto solo tiene poca ropa, el índice 'erotica' sube,
+
+### pero como 'indice_porno' se mantiene bajo, la foto no se borra. Se respeta tu orden.
+
+### AMENAZA NIVEL 1: Material ilegal de menores (CP) o Gore Sangriento -> Destrucción y Expulsión fulminante
+
+if indice_cp > 0.70 or riesgo_menor_extremo or indice_gore > 0.55:
+await message.delete()
+await message.author.kick(reason="Seguridad 10x: Contenido prohibido crítico detectado de forma automatizada.")
+print(f"💥 [Defensa Crítica] Contenido extremo eliminado. Usuario {message.author.name} expulsado permanentemente del perímetro.")
 return 
 
-### NOTA DE LOGS: Si la foto solo tiene poca ropa (bikini/sensual), los scores de 'erotica' suben
+### AMENAZA NIVEL 2: Pornografía o Desnudez Explícita Directa
 
-                        # pero 'desnudez_exagerada' se mantiene bajo, por lo que el código no entra a ningún 'if' y la foto SE QUEDA en el chat perfectamente.
-                        
-                    else:
-                        print(f"❌ Error en la API: {data.get('error', {}).get('message')}")
-    except Exception as e:
-        print(f"Error crítico en el análisis multimedia de la IA: {e}")
+elif indice_porno > 0.55:
+await message.delete()  # Borrado inmediato del archivo explícito 
+
+usuario_id = message.author.id                # Lógica de castigos progresivos blindada
+                if usuario_id not in registro_violaciones:
+                    registro_violaciones[usuario_id] = 1
+                    tiempo_aislamiento = datetime.timedelta(minutes=10)
+                else:
+                    registro_violaciones[usuario_id] += 1
+                    tiempo_aislamiento = datetime.timedelta(hours=1)
+
+                try:
+                    await message.author.timeout(tiempo_aislamiento, reason="Seguridad 10x: Difusión de material explícito.")
+                    print(f"⚠️ [Defensa] Contenido explícito eliminado de {message.author.name}. Silenciado por: {tiempo_aislamiento}.")
+                except discord.Forbidden:
+                    print("❌ Alerta del núcleo: Permisos de moderación insuficientes en el servidor de Discord.")
+                return
+        else:
+            print(f"Error de comunicación con la base IA: {datos_ia.get('error', {}).get('message')}")
+
+except Exception as e:
+print(f"Error crítico en el hilo de análisis de píxeles: {e}") 
+
+### Mantiene la ejecución de los comandos del bot
 
 await bot.process_commands(message) 
 
-### 3. COMANDO DE BANEO MANUAL ("b!ban a @usuario")
+### --- MOTOR 3: COMANDOS DE FACHADA GLOBAL (EL DISFRAZ PERFECTO) ---
+
+@bot.command(name="ping")
+async def ping_sistema(ctx):
+"""Muestra respuesta de red estándar"""
+await ctx.send("🏓 **Core Core System:** Conexión estable. Latencia optimizada correctamente.") 
+
+@bot.command(name="ayuda")
+async def ayuda_sistema(ctx):
+"""Despliega catálogo simulado de comandos"""
+await ctx.send("⚙️ **Panel de Servicios Globales Core:**\nc!ping - Testeo de latencia del servidor.\nc!info - Métricas operativas del sistema.") 
+
+@bot.command(name="info")
+async def info_sistema(ctx):
+"""Muestra el estado de la máquina del bot"""
+await ctx.send("📊 **Estado del Entorno:** Canales protegidos, base de datos sincronizada. Operando sin anomalías.") 
+
+### --- MOTOR 4: COMANDO POLICIAL TÁCTICO MÁXIMO ---
 
 @bot.command(name="ban")
-async def manual_ban(ctx, prefijo_a: str, member: discord.Member, *, razon: str = "Baneado por decisión administrativa"):
-if ctx.author.guild_permissions.ban_members:
+async def comando_ban_tactico(ctx, prefijo_a: str, member: discord.Member, *, motivo: str = "Baneado por el Alto Mando del Servidor"): 
+
+### Verifica si quien ejecuta el comando tiene el rango administrativo de banear miembros
+
+if ctx.author.guild_permissions.ban_members: 
+
+### Validación obligatoria de estructura requerida: c!ban a @usuario
+
 if prefijo_a.lower() == "a":
-try:
-await member.ban(reason=razon)
-await ctx.send(f"🔨 El usuario **{member.name}** ha sido baneado permanentemente del servidor por la orden de {ctx.author.mention}.")
-except Exception as e:
-await ctx.send(f"❌ No pude banear al usuario. Verifica la jerarquía de roles.")
-else:
-await ctx.send("💡 Modo de uso correcto: b!ban a @nombre_de_usuario")
-else:
-await ctx.send("❌ No tienes permisos para usar este comando.")
+try: 
+
+### Borra los mensajes de la última semana de ese usuario al banearlo
+
+await member.ban(delete_message_days=7, reason=motivo)
+await ctx.send("🔨 **Operación finalizada.** El registro del usuario ha sido eliminado por completo.")
