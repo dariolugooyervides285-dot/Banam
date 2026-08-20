@@ -36,43 +36,43 @@ registro_violaciones = {}
 
 @bot.event
 async def on_ready():
-print("=================================================================")
-print(f"⚡ SISTEMA INTEGRADO DE SEGURIDAD MÁXIMA ACTIVADO: {bot.user.name}")
-print("⚡ POTENCIA DE ESCÁNER COMPUESTO EN EJECUCIÓN [10x MOTOR NORMAL]")
-print("=================================================================") 
+    print("=================================================================")
+    print(f"⚡ SISTEMA INTEGRADO DE SEGURIDAD MÁXIMA ACTIVADO: {bot.user.name}")
+    print("⚡ POTENCIA DE ESCÁNER COMPUESTO EN EJECUCIÓN [10x MOTOR NORMAL]")
+    print("=================================================================") 
 
 ### --- MOTOR 1: CONTROL ULTRA ESTRICTO DE ACCESO (PROTECCIÓN ANTI-INVASIÓN) ---
 
 @bot.event
 async def on_member_join(member):
-ahora = datetime.datetime.now(datetime.timezone.utc)
-antiguedad = ahora - member.created_at 
+    ahora = datetime.datetime.now(datetime.timezone.utc)
+    antiguedad = ahora - member.created_at 
 
 ### Umbral de seguridad elevado: Cuentas creadas hace menos de 14 días son bloqueadas
 
-if antiguedad.days < 14:
-try: 
+    if antiguedad.days < 14:
+    try: 
 
 # Mensaje genérico de fachada para ocultar que es una IA policial
 
-await member.send("⚠️ Error 503: Servidor temporalmente inaccesible para cuentas no verificadas.")
-await member.kick(reason="Seguridad 10x: Cuenta de alto riesgo (antigüedad insuficiente).")
-print(f"🔒 [Frontera] Expulsado evasor potencial: {member.name} (Edad cuenta: {antiguedad.days} días)")
+        await member.send("⚠️ Error 503: Servidor temporalmente inaccesible para cuentas no verificadas.")
+        await member.kick(reason="Seguridad 10x: Cuenta de alto riesgo (antigüedad insuficiente).")
+        print(f"🔒 [Frontera] Expulsado evasor potencial: {member.name} (Edad cuenta: {antiguedad.days} días)")
 
-except Exception as e:
-print(f"Error en cortafuegos de entrada: {e}") 
+    except Exception as e:
+        print(f"Error en cortafuegos de entrada: {e}") 
 
 ### --- MOTOR 2: DEFENSA ACTIVA EN TIEMPO REAL (MICROSEGUNDOS) ---
 
 @bot.event
 async def on_message(message):
-if message.author == bot.user:
-return 
+    if message.author == bot.user:
+        return 
 
 ### ANALIZADOR A: INTELIGENCIA DE TEXTO (PREVENCIÓN DE ACOSO)
 
-contenido_limpio = message.content.lower()
-if any(patron in contenido_limpio for patron in PATRONES_GROOMING):
+    contenido_limpio = message.content.lower()
+    if any(patron in contenido_limpio for patron in PATRONES_GROOMING):
 try:
 await message.delete()  # Supresión instantánea del intento de contacto 
 
